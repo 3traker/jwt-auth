@@ -13,6 +13,7 @@ namespace Tymon\JWTAuth\Middleware;
 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use App\Helpers\ApiHelp;
 
 class RefreshToken extends BaseMiddleware
 {
@@ -30,9 +31,9 @@ class RefreshToken extends BaseMiddleware
         try {
             $newToken = $this->auth->setRequest($request)->parseToken()->refresh();
         } catch (TokenExpiredException $e) {
-            return $this->respond('tymon.jwt.expired', 'token_expired', $e->getStatusCode(), [$e]);
+            return ApiHelp::errorResponse('token_expired', 'Token expired', 401);
         } catch (JWTException $e) {
-            return $this->respond('tymon.jwt.invalid', 'token_invalid', $e->getStatusCode(), [$e]);
+            return ApiHelp::errorResponse('token_invalid', 'Token invalid', 401);
         }
 
         // send the refreshed token back to the client
